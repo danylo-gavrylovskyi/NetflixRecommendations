@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "UqEBuVyIJYq2qiqPxg8YndAONyKANNZ2qyfm5tUE6Zbo/XqrAfu27FlJJtd6RJXkeXCj6CdsOlPk74pKE3FhdA==",
+  "success": true,
+  "projectFilePath": "C:\\Meine\\C#\\Netflix\\Netflix\\Netflix.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\danya\\.nuget\\packages\\csvhelper\\30.0.1\\csvhelper.30.0.1.nupkg.sha512"
+  ],
+  "logs": []
+}

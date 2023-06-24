@@ -1,0 +1,17 @@
+C:\Meine\C#\Netflix\Netflix\bin\Debug\net7.0\Netflix.exe
+C:\Meine\C#\Netflix\Netflix\bin\Debug\net7.0\Netflix.deps.json
+C:\Meine\C#\Netflix\Netflix\bin\Debug\net7.0\Netflix.runtimeconfig.json
+C:\Meine\C#\Netflix\Netflix\bin\Debug\net7.0\Netflix.dll
+C:\Meine\C#\Netflix\Netflix\bin\Debug\net7.0\Netflix.pdb
+C:\Meine\C#\Netflix\Netflix\bin\Debug\net7.0\CsvHelper.dll
+C:\Meine\C#\Netflix\Netflix\obj\Debug\net7.0\Netflix.csproj.AssemblyReference.cache
+C:\Meine\C#\Netflix\Netflix\obj\Debug\net7.0\Netflix.GeneratedMSBuildEditorConfig.editorconfig
+C:\Meine\C#\Netflix\Netflix\obj\Debug\net7.0\Netflix.AssemblyInfoInputs.cache
+C:\Meine\C#\Netflix\Netflix\obj\Debug\net7.0\Netflix.AssemblyInfo.cs
+C:\Meine\C#\Netflix\Netflix\obj\Debug\net7.0\Netflix.csproj.CoreCompileInputs.cache
+C:\Meine\C#\Netflix\Netflix\obj\Debug\net7.0\Netflix.csproj.CopyComplete
+C:\Meine\C#\Netflix\Netflix\obj\Debug\net7.0\Netflix.dll
+C:\Meine\C#\Netflix\Netflix\obj\Debug\net7.0\refint\Netflix.dll
+C:\Meine\C#\Netflix\Netflix\obj\Debug\net7.0\Netflix.pdb
+C:\Meine\C#\Netflix\Netflix\obj\Debug\net7.0\Netflix.genruntimeconfig.cache
+C:\Meine\C#\Netflix\Netflix\obj\Debug\net7.0\ref\Netflix.dll
