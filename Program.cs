@@ -1,5 +1,6 @@
 ﻿using CsvHelper;
 using System.Globalization;
+using Features;
 class Movie
 {
     public string? _id { get; set; }
@@ -23,12 +24,14 @@ class User
     public string? username { get; set; }
 
     public Dictionary<string, double> positionIn8Dimension = new Dictionary<string, double>();
+    public Dictionary<Movie, double> ratedFilms = new Dictionary<Movie, double>();
 }
 
 class Program
 {
     static void Main(string[] args)
     {
+        // getting data
         var config = new CsvHelper.Configuration.CsvConfiguration(cultureInfo: CultureInfo.InvariantCulture)
         {
             MissingFieldFound = null
@@ -50,15 +53,43 @@ class Program
                                                                              x.genres.Contains("Thriller") ||
                                                                              x.genres.Contains("Documentary")
                                                                              );
-        for (int i = 0; i < users.Count; i++)
+        // Set users positions in 8-dimensional space of preference
+        //for (int i = 0; i < users.Count; i++)
+        //{
+        //    Dictionary<string, int> genresRatingCount = GetUserGenresRatingsCount(ratings, users[i]);
+        //    users[i].positionIn8Dimension = ConvertUserGenresRatingCountTo8Dimension(genresRatingCount);
+        //}
+
+        // User commands
+        int ratedFilmsCount = 0;
+        User me = new User();
+        while (true)
         {
-            Dictionary<string, int> genresRatingCount = GetUserGenresRatingsCount(ratings, users[i]);
-            users[i].positionIn8Dimension = ConvertUserGenresRatingCountTo8Dimension(genresRatingCount);
-            foreach (var item in users[i].positionIn8Dimension)
+            Console.WriteLine("Choose command to use:\n\t1. rate <Film Name> <Your Rate from 0-10>\n\t2. discover\n\t3. recommend (you need to rate at least 5 films)\n\t4. exit");
+            string answer = Console.ReadLine()!;
+            if (answer.Contains("rate") && ratedFilmsCount <= 10 || answer == "1") {
+                string filmName = answer.Substring(4, answer.Length - 6);
+                double rating = Convert.ToDouble(answer.Substring(answer.Length - 2));
+                Movie movie;
+                // If this film exists
+                if (movieData.Any(film => film.movie_title == filmName))
+                {
+                    movie = movieData.FirstOrDefault(film => film.movie_title == filmName)!;
+                    me.ratedFilms[movie] = rating;
+                    ratedFilmsCount++;
+                    Console.WriteLine($"You've rated a film '{filmName}' ({movie.movie_id}) as {rating}");
+                    continue;
+                } 
+                // Maybe user mean this film
+                Levenshtein.GetSimilarFilmNames(filmName, movieData);
+            }
+            else if (answer == "exit" || answer == "3")
             {
-                Console.WriteLine($"{item.Key} | {item.Value}");
+                break;
             }
         }
+
+
 
         Dictionary<string, int> GetUserGenresRatingsCount(List<UserRate> ratings, User user)
         {
@@ -74,6 +105,8 @@ class Program
                     for (int j = 0; j < genres.Length; j++)
                     {
                         if (result.ContainsKey(genres[j])) result[genres[j]]++;
+                        else if (genres.Contains("Adventure")) result["Action"]++;
+                        else if (genres.Contains("Science Fiction") || genres.Contains("Fantasy")) result["Fiction"]++;
                     }
                 }
             }
@@ -96,12 +129,9 @@ class Program
         {
                 { "Drama", 0 },
                 { "Action", 0 },
-                { "Adventure", 0 },
                 { "Fiction", 0 },
                 { "Romance", 0 },
                 { "Comedy", 0 },
-                { "Science Fiction", 0 },
-                { "Fantasy", 0 },
                 { "Animation", 0 },
                 { "Thriller", 0 },
                 { "Documentary", 0 }
