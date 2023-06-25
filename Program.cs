@@ -24,7 +24,6 @@ class User
     public string? username { get; set; }
 
     public Dictionary<string, double> positionIn8Dimension = new Dictionary<string, double>();
-    public Dictionary<Movie, double> ratedFilms = new Dictionary<Movie, double>();
 }
 
 class Program
@@ -41,7 +40,7 @@ class Program
         const string pathToRatingsFile = "C:\\Meine\\C#\\Netflix\\ratings_export.csv";
         var users = GetUsers(pathToUsersFile);
         var ratings = GetRatings(pathToRatingsFile);
-        var movieData = GetMovieData(pathToMovieDataFile, config).Where(x => x.genres.Contains("Drama") ||
+        var movieData = GetMovieData(pathToMovieDataFile, config).Where(x => x.genres!.Contains("Drama") ||
                                                                              x.genres.Contains("Action") ||
                                                                              x.genres.Contains("Adventure") ||
                                                                              x.genres.Contains("Fiction") ||
@@ -53,29 +52,23 @@ class Program
                                                                              x.genres.Contains("Thriller") ||
                                                                              x.genres.Contains("Documentary")
                                                                              );
-        // Set users positions in 8-dimensional space of preference
-        //for (int i = 0; i < users.Count; i++)
-        //{
-        //    Dictionary<string, int> genresRatingCount = GetUserGenresRatingsCount(ratings, users[i]);
-        //    users[i].positionIn8Dimension = ConvertUserGenresRatingCountTo8Dimension(genresRatingCount);
-        //}
-
         // User commands
         int ratedFilmsCount = 0;
-        User me = new User();
+        User me = new User() { username="me" };
+        users.Add(me);
         while (true)
         {
             Console.WriteLine("Choose command to use:\n\t1. rate <Film Name> <Your Rate from 0-10>\n\t2. discover\n\t3. recommend (you need to rate at least 5 films)\n\t4. exit");
             string answer = Console.ReadLine()!;
             if (answer.Contains("rate") && ratedFilmsCount <= 10 || answer == "1") {
                 string filmName = answer.Substring(4, answer.Length - 6);
-                double rating = Convert.ToDouble(answer.Substring(answer.Length - 2));
+                string rating = answer.Substring(answer.Length - 2);
                 Movie movie;
                 // If this film exists
                 if (movieData.Any(film => film.movie_title == filmName))
                 {
                     movie = movieData.FirstOrDefault(film => film.movie_title == filmName)!;
-                    me.ratedFilms[movie] = rating;
+                    ratings.Add(new UserRate() { user_id="me", movie_id = movie.movie_id, rating_val = rating });
                     ratedFilmsCount++;
                     Console.WriteLine($"You've rated a film '{filmName}' ({movie.movie_id}) as {rating}");
                     continue;
@@ -83,10 +76,24 @@ class Program
                 // Maybe user mean this film
                 Levenshtein.GetSimilarFilmNames(filmName, movieData);
             }
-            else if (answer == "exit" || answer == "3")
+            else if (answer == "recommend")
             {
-                break;
+                if (ratedFilmsCount < 5)
+                {
+                    Console.WriteLine("We need to know what do you like, rate at least 5 films in order to receive recommendations");
+                    continue;
+                }
+
+                // Set users positions in 8-dimensional space of preference
+                for (int i = 0; i < users.Count; i++)
+                {
+                    Dictionary<string, int> genresRatingCount = GetUserGenresRatingsCount(ratings, users[i]);
+                    users[i].positionIn8Dimension = ConvertUserGenresRatingCountTo8Dimension(genresRatingCount);
+                }
+                Movie recommendedFilm = Recommendations.GetRecommendedFilm(me, users, ratings, movieData);
+                Console.WriteLine($"Try to watch {recommendedFilm.movie_title}, i think you will like it");
             }
+            else if (answer == "exit" || answer == "3") break;
         }
 
 
@@ -99,7 +106,7 @@ class Program
             {
                 if (ratings[i].user_id == user.username)
                 {
-                    var film = movieData.FirstOrDefault(x => x.movie_id == ratings[i].movie_id);
+                    var film = movieData!.FirstOrDefault(x => x.movie_id == ratings[i].movie_id);
                     if (film == null || film.genres == null) continue;
                     string[] genres = film.genres.Split(new Char[] { '[', ']', '"', ',' }, StringSplitOptions.RemoveEmptyEntries);
                     for (int j = 0; j < genres.Length; j++)

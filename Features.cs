@@ -1,6 +1,6 @@
-﻿namespace RateFilm
+﻿namespace Features
 {
-    class RateCommand
+    class Levenshtein
     {
         public static void GetSimilarFilmNames(string filmName, IEnumerable<Movie> movieData)
         {
@@ -52,6 +52,51 @@
             }
 
             return matrixx[firstString.Length - 1, secondString.Length - 1];
+        }
+    }
+
+    class Recommendations
+    {
+        public static Movie GetRecommendedFilm(User me, List<User> users, List<UserRate> ratings, IEnumerable<Movie> movieData)
+        {
+            List<User> similarUsers = GetSimilarUsers(me, users);
+            Movie recommendedMovie = GetLikedMovie(me, similarUsers, ratings, movieData);
+            return recommendedMovie;
+        }
+
+        private static List<User> GetSimilarUsers(User me, List<User> users)
+        {
+            List<User> similarUsers = new List<User>();
+            int similarUsersCount = 0;
+            List<KeyValuePair<string, double>> preferences = me.positionIn8Dimension.OrderBy(x => x.Value).Take(3).ToList();
+            for (int i = 0; i < users.Count && similarUsersCount < 3; i++)
+            {
+                List<KeyValuePair<string, double>> currentUserPreferences = users[i].positionIn8Dimension.OrderBy(x => x.Value).Take(3).ToList();
+                if (currentUserPreferences.Equals(preferences)) similarUsers.Add(users[i]);
+            }
+            return similarUsers;
+        }
+
+        private static Movie GetLikedMovie(User me, List<User> similarUsers, List<UserRate> ratings, IEnumerable<Movie> movieData)
+        {
+            Movie result = new Movie();
+            var highRatedMovies = ratings.Where(x => x.user_id == similarUsers[0].username && Convert.ToDouble(x.rating_val) >= 9).ToList();
+            for (int i = 0; i < highRatedMovies.Count; i++)
+            {
+                if (ratings.Any(x => x.user_id == similarUsers[1].username && 
+                                     x.movie_id == highRatedMovies[i].movie_id &&
+                                     Convert.ToDouble(x.rating_val) >= 9) &&
+                    ratings.Any(x => x.user_id == similarUsers[2].username &&
+                                     x.movie_id == highRatedMovies[i].movie_id &&
+                                     Convert.ToDouble(x.rating_val) >= 9) &&
+                    !ratings.Any(x => x.user_id == me.username &&
+                                 x.movie_id == highRatedMovies[i].movie_id)
+                    )
+                {
+                    result = movieData.FirstOrDefault(film => film._id == highRatedMovies[i].movie_id)!;
+                }
+            }
+            return result;
         }
     }
 }
