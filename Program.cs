@@ -58,7 +58,7 @@ class Program
         users.Add(me);
         while (true)
         {
-            Console.WriteLine("Choose command to use:\n\t1. rate <Film Name> <Your Rate from 0-10>\n\t2. discover\n\t3. recommend (you need to rate at least 5 films)\n\t4. exit");
+            Console.WriteLine("Choose command to use:\n\t1. rate <Film Name> <Your Rate from 0-10>\n\t2. discovery\n\t3. recommend (you need to rate at least 5 films)\n\t4. exit");
             string answer = Console.ReadLine()!;
             if (answer.Contains("rate") && ratedFilmsCount <= 10 || answer == "1") {
                 string filmName = answer.Substring(4, answer.Length - 6);
@@ -92,6 +92,22 @@ class Program
                 }
                 Movie recommendedFilm = Recommendations.GetRecommendedFilm(me, users, ratings, movieData);
                 Console.WriteLine($"Try to watch {recommendedFilm.movie_title}, i think you will like it");
+            }
+            else if (answer == "discovery")
+            {
+                List<string> necessaryGenres = new List<string>() {"Drama", "Comedy", "Action", "Romance", "Fiction", "Animation", "Thriller", "Documentary" };
+                for (int i = 0; i < necessaryGenres.Count; i++)
+                {
+                    Movie filmToDiscover = Discovery.GetFilmForDiscovery(ratings, movieData, necessaryGenres[i], me);
+                    Console.WriteLine($"Have you seen '{filmToDiscover.movie_title}'? Y/N");
+                    string answerToYesNo = Console.ReadLine()!;
+                    if (answerToYesNo == "Yes" || answerToYesNo == "Y" || answerToYesNo == "yes") 
+                    {
+                        Console.WriteLine("How would you rate it ?");
+                        string rate = Console.ReadLine()!;
+                        ratings.Add(new UserRate() { movie_id = filmToDiscover.movie_id, user_id = me.username, rating_val = rate });
+                    }
+                }
             }
             else if (answer == "exit" || answer == "3") break;
         }

@@ -99,4 +99,36 @@
             return result;
         }
     }
+
+    class Discovery
+    {
+        public static Movie GetFilmForDiscovery(List<UserRate> ratings, IEnumerable<Movie> movieData, string genre, User me)
+        {
+            var bestMovies = GetBestMovies(ratings);
+            foreach (var bestMovie in bestMovies)
+            {
+                if (movieData.Any(movie => movie.movie_id == bestMovie.Key && movie.genres!.Contains(genre)))
+                {
+                    Movie movieToDiscover = movieData.FirstOrDefault(movie => movie.movie_id == bestMovie.Key && movie.genres!.Contains(genre))!;
+                    if (!ratings.Any(x => x.user_id == me.username && x.movie_id == movieToDiscover.movie_id)) return movieToDiscover;
+                }
+            }
+            throw new Exception("Error when getting film for discovery mode");
+        }
+        private static IOrderedEnumerable<KeyValuePair<string, double>> GetBestMovies(List<UserRate> ratings)
+        {
+            Dictionary<string, double> movieRatings = new Dictionary<string, double>();
+            for (int i = 0; i < ratings.Count; i++)
+            {
+                string movieID = ratings[i].movie_id!;
+                if (movieRatings.ContainsKey(movieID))
+                {
+                    movieRatings[movieID] += Convert.ToDouble(ratings[i].rating_val);
+                }
+                else movieRatings[movieID] = 0;
+            }
+            var topMovies = movieRatings.OrderBy(x => x.Value);
+            return topMovies;
+        }
+    }
 }
