@@ -1,31 +1,6 @@
 ﻿using CsvHelper;
 using System.Globalization;
 using Features;
-class Movie
-{
-    public string? _id { get; set; }
-    public string? genres { get; set; }
-    public string? movie_id { get; set; }
-    public string? movie_title { get; set; }
-}
-
-class UserRate
-{
-    public string? _id { get; set; }
-    public string? user_id { get; set; }
-    public string? movie_id { get; set; }
-    public string? rating_val { get; set; }
-}
-
-class User
-{
-    public string? _id { get; set; }
-    public string? display_name { get; set; }
-    public string? username { get; set; }
-
-    public Dictionary<string, double> positionIn8Dimension = new Dictionary<string, double>();
-}
-
 class Program
 {
     static void Main(string[] args)
@@ -61,7 +36,7 @@ class Program
             Console.WriteLine("Choose command to use:\n\t1. rate <Film Name> <Your Rate from 0-10>\n\t2. discovery\n\t3. recommend (you need to rate at least 5 films)\n\t4. exit");
             string answer = Console.ReadLine()!;
             if (answer.Contains("rate") && ratedFilmsCount <= 10 || answer == "1") {
-                string filmName = answer.Substring(4, answer.Length - 6);
+                string filmName = answer.Substring(5, answer.Length - 7);
                 string rating = answer.Substring(answer.Length - 2);
                 Movie movie;
                 // If this film exists
@@ -76,7 +51,7 @@ class Program
                 // Maybe user mean this film
                 Levenshtein.GetSimilarFilmNames(filmName, movieData);
             }
-            else if (answer == "recommend")
+            else if (answer == "recommend" || answer == "3")
             {
                 if (ratedFilmsCount < 5)
                 {
@@ -93,7 +68,7 @@ class Program
                 Movie recommendedFilm = Recommendations.GetRecommendedFilm(me, users, ratings, movieData);
                 Console.WriteLine($"Try to watch {recommendedFilm.movie_title}, i think you will like it");
             }
-            else if (answer == "discovery")
+            else if (answer == "discovery" || answer == "2")
             {
                 List<string> necessaryGenres = new List<string>() {"Drama", "Comedy", "Action", "Romance", "Fiction", "Animation", "Thriller", "Documentary" };
                 for (int i = 0; i < necessaryGenres.Count; i++)
@@ -105,11 +80,12 @@ class Program
                     {
                         Console.WriteLine("How would you rate it ?");
                         string rate = Console.ReadLine()!;
+                        ratedFilmsCount++;
                         ratings.Add(new UserRate() { movie_id = filmToDiscover.movie_id, user_id = me.username, rating_val = rate });
                     }
                 }
             }
-            else if (answer == "exit" || answer == "3") break;
+            else if (answer == "exit" || answer == "4") break;
         }
 
 

@@ -125,9 +125,9 @@
                 {
                     movieRatings[movieID] += Convert.ToDouble(ratings[i].rating_val);
                 }
-                else movieRatings[movieID] = 0;
+                else movieRatings[movieID] = Convert.ToDouble(ratings[i].rating_val);
             }
-            var topMovies = movieRatings.OrderBy(x => x.Value);
+            var topMovies = movieRatings.OrderByDescending(x => x.Value);
             return topMovies;
         }
     }
