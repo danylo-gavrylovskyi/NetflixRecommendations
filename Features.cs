@@ -72,7 +72,7 @@
             for (int i = 0; i < users.Count && similarUsersCount < 3; i++)
             {
                 List<KeyValuePair<string, double>> currentUserPreferences = users[i].positionIn8Dimension.OrderBy(x => x.Value).Take(3).ToList();
-                if (currentUserPreferences.Equals(preferences)) similarUsers.Add(users[i]);
+                if (currentUserPreferences.SequenceEqual(preferences)) similarUsers.Add(users[i]);
             }
             return similarUsers;
         }

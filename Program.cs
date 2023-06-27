@@ -3,7 +3,7 @@ using System.Globalization;
 using Features;
 class Program
 {
-    static void Main(string[] args)
+    static void Main()
     {
         // getting data
         var config = new CsvHelper.Configuration.CsvConfiguration(cultureInfo: CultureInfo.InvariantCulture)
@@ -137,7 +137,7 @@ class Program
             };
         }
     }
-    public static List<Movie> GetMovieData(string pathToFile, CsvHelper.Configuration.CsvConfiguration config)
+    private static List<Movie> GetMovieData(string pathToFile, CsvHelper.Configuration.CsvConfiguration config)
     {
         using (var reader = new StreamReader(pathToFile))
         using (var csv = new CsvReader(reader, config))
@@ -146,7 +146,7 @@ class Program
             return new List<Movie>(records);
         }
     }
-    public static List<UserRate> GetRatings(string pathToFile)
+    private static List<UserRate> GetRatings(string pathToFile)
     {
         using (var reader = new StreamReader(pathToFile))
         using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
@@ -155,7 +155,7 @@ class Program
             return new List<UserRate>(records);
         }
     }
-    public static List<User> GetUsers(string pathToFile)
+    private static List<User> GetUsers(string pathToFile)
     {
         using (var reader = new StreamReader(pathToFile))
         using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
